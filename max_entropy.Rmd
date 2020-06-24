@@ -1,0 +1,66 @@
+---
+title: "Max_entropy"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(janitor)
+library(raster)
+library(sf)
+library(tmap)
+library(tmaptools)
+library(gstat)
+
+```
+
+```{r}
+bands <- stack("UVVR_Landsat_Bands.tif")
+evi <- stack("UVVR_Landsat_EVI.tif")
+index <- stack("UVVR_Landsat_Index.tif")
+uvvr <- stack("UVVR_Landsat_UVVR.tif")
+```
+
+# `stack` function once you separate all 7 bands from all 4 rasters. 
+```{r}
+bands
+```
+
+
+# Plot Rasters
+ 
+```{r}
+plot(bands)
+plot(evi)
+plot(index)
+plot(uvvr)
+```
+# Check the GRS
+
+```{r}
+bands@crs
+uvvr@crs
+```
+
+```{r}
+wgs84 <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +no_defs"
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
