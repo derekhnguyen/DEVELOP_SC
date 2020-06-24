@@ -1,0 +1,81 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(raster)
+```
+
+```{r}
+bands <- stack("UVVR_Landsat_Bands.tif")
+bands
+
+nlayers(bands)
+```
+
+```{r}
+summary(bands, maxsamp = ncell(bands))
+```
+
+```{r}
+bands_df <- as.data.frame(bands, xy = TRUE)
+```
+
+```{r}
+str(bands_df)
+```
+
+
+
+## EVI 
+```{r}
+evi <- raster("UVVR_Landsat_EVI.tif")
+nlayers(evi)
+```
+
+```{r}
+summary(evi, maxsamp = ncell(evi))
+```
+
+```{r}
+evi_df <- as.data.frame(evi, xy = TRUE)
+```
+
+
+
+## Index
+```{r}
+index <- stack("UVVR_Landsat_Index.tif")
+nlayers(index)
+```
+
+```{r}
+summary(index, maxsamp = ncell(index))
+```
+
+```{r}
+index_df <- as.data.frame(index, xy = TRUE, na = FALSE)
+```
+
+
+
+## UVVR 
+```{r}
+uvvr <- raster("UVVR_Landsat_UVVR.tif")
+nlayers(uvvr)
+```
+
+```{r}
+summary(uvvr, maxsamp = ncell(uvvr))
+```
+
+```{r}
+uvvr_df <- as.data.frame(uvvr, xy = TRUE, na = FALSE)
+```
+
+
