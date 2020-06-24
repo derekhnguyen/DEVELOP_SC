@@ -1,5 +1,5 @@
 #############Load UVVR Rasters##################
-library("rgdal")  #gfiw
+library("rgdal")
 Lan_Ban <- raster("UVVR_Landsat_Bands.tif", band=7)
 Lan_Ban@extent
 
