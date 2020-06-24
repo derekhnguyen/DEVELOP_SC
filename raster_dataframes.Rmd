@@ -13,10 +13,14 @@ library(tidyverse)
 ```
 
 ```{r}
-bands <- stack("UVVR_Landsat_Bands.tif") 
-bands
+bands <- stack(c("UVVR_Landsat_Bands.tif",
+                 "UVVR_Landsat_EVI.tif",
+                 "UVVR_Landsat_Index.tif",
+                 "UVVR_Landsat_UVVR.tif")) 
 
-nlayers(bands)
+
+
+#nlayers(bands)
 ```
 
 ```{r}
@@ -85,5 +89,7 @@ summary(uvvr, maxsamp = ncell(uvvr))
 ```{r}
 uvvr_df <- as.data.frame(uvvr, xy = TRUE, na = FALSE)
 ```
+
+
 
 
