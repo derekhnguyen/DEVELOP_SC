@@ -24,15 +24,15 @@ plot(Lan_Ban, main= "UVVR Landsat Bands")
 ?plot
 
 #distribution of values in the raster
-hist(Lan_Ban, main="Distribution of Landsat Bands in UVVR", 
-     col= "purple", 
+hist(Lan_Ban, main="Distribution of Landsat Bands in UVVR",
+     col= "purple",
      maxpixels=22000000)
 
 ?gbm.interactions
 
 ############ BRT code from MSU Spatial & Community Ecology lab #####################
 library(dismo)     # package to run the model
-library(gbm)       # GBM contains boosted regression tree functions 
+library(gbm)       # GBM contains boosted regression tree functions
 #load("~/Downloads/modeldata.RData") = required by example, switched in code modeldata for Lan_Ban
 
 files <- list.files(path=paste(system.file(package="dismo"), "/ex",  sep= ""), pattern= "grd", full.names=TRUE )
@@ -43,7 +43,7 @@ brt_model <- gbm.step(data=Lan_Ban, gbm.x = 9, gbm.y = 1)
 
 ?gbm.step
 #Make predictions across raster layer
-predictions <- predict(predictors, brt_model, n.trees=brt_model$gbm.call$best.trees, type="response") 
+predictions <- predict(predictors, brt_model, n.trees=brt_model$gbm.call$best.trees, type="response")
 
 #Make plot
 plot(predictions, main="BRT prediction - full")
