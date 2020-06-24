@@ -9,14 +9,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(raster)
+library(tidyverse)
 ```
 
 ```{r}
-bands <- stack("UVVR_Landsat_Bands.tif")
+bands <- stack("UVVR_Landsat_Bands.tif") 
 bands
 
 nlayers(bands)
 ```
+
+```{r}
+class("B7")
+
+```
+
 
 ```{r}
 summary(bands, maxsamp = ncell(bands))
@@ -56,6 +63,7 @@ nlayers(index)
 
 ```{r}
 summary(index, maxsamp = ncell(index))
+
 ```
 
 ```{r}
