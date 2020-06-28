@@ -1,0 +1,153 @@
+---
+title: "raster_v2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+title: "Untitled"
+output: html_document
+---
+##Hi team##
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(raster)
+library(tidyverse)
+library(rgdal)
+```
+
+```{r}
+bands <- raster("UVVR_Landsat_Bands.tif")
+evi <- raster("UVVR_Landsat_EVI.tif")
+index <- raster("UVVR_Landsat_Index.tif")
+uvvr <- raster("UVVR_Landsat_UVVR.tif")
+
+
+
+nlayers(bands)
+nlayers(evi)
+nlayers(uvvr)
+```
+
+
+```{r}
+bands
+uvvr
+```
+
+
+
+```{r}
+summary(bands, maxsamp = ncell(bands))
+```
+
+```{r}
+bands_df <- as.data.frame(bands, xy = TRUE)
+```
+
+```{r}
+str(bands_df)
+```
+
+
+
+## EVI 
+```{r}
+evi <- raster("UVVR_Landsat_EVI.tif")
+nlayers(evi)
+```
+
+```{r}
+summary(evi, maxsamp = ncell(evi))
+```
+
+```{r}
+evi_df <- as.data.frame(evi, xy = TRUE)
+```
+
+
+
+## Index
+```{r}
+index <- stack("UVVR_Landsat_Index.tif")
+nlayers(index)
+```
+
+```{r}
+summary(index, maxsamp = ncell(index))
+
+```
+
+```{r}
+index_df <- as.data.frame(index, xy = TRUE)
+```
+
+
+
+## UVVR 
+```{r}
+uvvr <- raster("UVVR_Landsat_UVVR.tif")
+nlayers(uvvr)
+```
+
+```{r}
+summary(uvvr, maxsamp = ncell(uvvr))
+```
+
+```{r}
+uvvr_points <- rasterToPoints(uvvr, spatial = TRUE)
+```
+
+
+
+
+```{r}
+uvvr_df <- data.frame(uvvr_points)
+rm(uvvr_points)
+
+
+
+ggplot()+
+  geom_raster(data = uvvr_df, aes(x = x,
+                                  y = y,
+                                  fill = UVVR_Landsat_UVVR)) 
+  coord_equal()
+```
+
+```{r}
+crs(uvvr)
+
+my_crs <- crs(uvvr) 
+```
+
+```{r}
+minValue(uvvr)
+```
+
+```{r}
+# explore distribution using `geom_histogram` of raster. Useful in identifying outliers and bad data values in our raster data. 
+
+ggplot() +
+  geom_histogram(data = uvvr_df, aes(UVVR_Landsat_UVVR), bins = 30) +
+  xlab("meters") 
+  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
