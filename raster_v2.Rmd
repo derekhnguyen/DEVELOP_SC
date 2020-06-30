@@ -8,18 +8,16 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r}
 library(raster)
 library(tidyverse)
 library(rgdal)
+library(gbm)
+library(dismo)
 ```
 
 ```{r}
-bands <- raster("UVVR_Landsat_Bands.tif")
+bands <- raster("UVVR_Landsat_Bands.tif", band = 7) # contains multiple layers, may have to use `stack` function instead. 
 evi <- raster("UVVR_Landsat_EVI.tif")
 index <- raster("UVVR_Landsat_Index.tif")
 uvvr <- raster("UVVR_Landsat_UVVR.tif")
@@ -34,21 +32,67 @@ nlayers(uvvr)
 
 ```{r}
 bands
+evi
+index
 uvvr
 ```
 
 
 
+
+
+
+# Stacking 
 ```{r}
-summary(bands, maxsamp = ncell(bands))
+bands_stack <- stack("UVVR_Landsat_Bands.tif") %>% 
+  setMinMax(bounds_stack)
 ```
 
 ```{r}
-bands_df <- as.data.frame(bands, xy = TRUE)
+bands_stack@layers
+```
+
+
+
+```{r}
+bands_stack_df <- as.data.frame(bands_stack, xy = TRUE)
 ```
 
 ```{r}
-str(bands_df)
+str(bands_stack_df)
+```
+
+
+
+## Boosted Regression Tree attempt 1 
+
+
+
+
+
+
+# create a histogram for first band
+```{r}
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B1), bins = 50)
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B2))
+  
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B3))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B4))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B5))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B6))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B7))
 ```
 
 
