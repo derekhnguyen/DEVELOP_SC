@@ -11,10 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(sf)
 library(tmap)
 library(tmaptools)
-
+library(ggplot2)
 library(tidyverse)
 library(here)
 library(janitor)
+library(ggmap)
+library(maps)
+library(mapdata)
 ```
 
 # Read in shapefiles
@@ -62,5 +65,12 @@ huc8_interactive <-
 
 tmap_mode("view")
 huc8_interactive
+
+
 ```
+
+
+
+
+
 
