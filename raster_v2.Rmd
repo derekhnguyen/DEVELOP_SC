@@ -1,0 +1,193 @@
+---
+title: "raster_v2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(raster)
+library(tidyverse)
+library(rgdal)
+library(gbm)
+library(dismo)
+```
+
+```{r}
+bands <- raster("UVVR_Landsat_Bands.tif", band = 7) # contains multiple layers, may have to use `stack` function instead. 
+evi <- raster("UVVR_Landsat_EVI.tif")
+index <- raster("UVVR_Landsat_Index.tif")
+uvvr <- raster("UVVR_Landsat_UVVR.tif")
+
+
+
+nlayers(bands)
+nlayers(evi)
+nlayers(uvvr)
+```
+
+
+```{r}
+bands
+evi
+index
+uvvr
+```
+
+
+
+
+
+
+# Stacking 
+```{r}
+bands_stack <- stack("UVVR_Landsat_Bands.tif") %>% 
+  setMinMax(bounds_stack)
+```
+
+```{r}
+bands_stack@layers
+```
+
+
+
+```{r}
+bands_stack_df <- as.data.frame(bands_stack, xy = TRUE)
+```
+
+```{r}
+str(bands_stack_df)
+```
+
+
+
+## Boosted Regression Tree attempt 1 
+
+
+
+
+
+
+# create a histogram for first band
+```{r}
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B1), bins = 50)
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B2))
+  
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B3))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B4))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B5))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B6))
+
+ggplot() +
+  geom_histogram(data = bands_stack_df, aes(B7))
+```
+
+
+
+## EVI 
+```{r}
+evi <- raster("UVVR_Landsat_EVI.tif")
+nlayers(evi)
+```
+
+```{r}
+summary(evi, maxsamp = ncell(evi))
+```
+
+```{r}
+evi_df <- as.data.frame(evi, xy = TRUE)
+```
+
+
+
+## Index
+```{r}
+index <- stack("UVVR_Landsat_Index.tif")
+nlayers(index)
+```
+
+```{r}
+summary(index, maxsamp = ncell(index))
+
+```
+
+```{r}
+index_df <- as.data.frame(index, xy = TRUE)
+```
+
+
+
+## UVVR 
+```{r}
+uvvr <- raster("UVVR_Landsat_UVVR.tif")
+nlayers(uvvr)
+```
+
+```{r}
+summary(uvvr, maxsamp = ncell(uvvr))
+```
+
+```{r}
+uvvr_points <- rasterToPoints(uvvr, spatial = TRUE)
+```
+
+
+
+
+```{r}
+uvvr_df <- data.frame(uvvr_points)
+rm(uvvr_points)
+
+
+
+ggplot()+
+  geom_raster(data = uvvr_df, aes(x = x,
+                                  y = y,
+                                  fill = UVVR_Landsat_UVVR)) 
+  coord_equal()
+```
+
+```{r}
+crs(uvvr)
+
+my_crs <- crs(uvvr) 
+```
+
+```{r}
+minValue(uvvr)
+```
+
+```{r}
+# explore distribution using `geom_histogram` of raster. Useful in identifying outliers and bad data values in our raster data. 
+
+ggplot() +
+  geom_histogram(data = uvvr_df, aes(UVVR_Landsat_UVVR), bins = 30) +
+  xlab("meters") 
+  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

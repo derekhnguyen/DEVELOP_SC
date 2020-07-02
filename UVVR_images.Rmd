@@ -1,0 +1,67 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(raster)
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(maps)
+library(mapdata)
+library(tmap)
+```
+
+```{r}
+uvvr <- stack("UVVR_Landsat_UVVR (2).tif")
+
+nlayers(uvvr)
+```
+
+```{r}
+uvvr_df <- as.data.frame(uvvr, xy = TRUE)
+```
+
+```{r}
+ggplot() +
+  geom_raster(data = uvvr_df, 
+              aes(x = x,
+                  y = y,
+                  fill = UVVR)) +
+  coord_quickmap() +
+  theme_light() 
+
+
+```
+
+```{r}
+ggplot() +
+  geom_raster(data = uvvr_df, 
+              aes(x = x,
+                  y = y,
+                  fill = UVVR_2009)) +
+  coord_quickmap() +
+  theme_light()
+```
+
+
+```{r}
+ggplot() +
+  geom_raster(data = uvvr_df, 
+              aes(x = x,
+                  y = y,
+                  fill = UVVR_diff)) +
+  coord_quickmap() +
+  theme_light()
+```
+
+
+
+
+
+
