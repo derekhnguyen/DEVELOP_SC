@@ -6,7 +6,7 @@ Lan_Ban@extent
 # calculate and save the min and max values of the raster to the raster object
 Lan_Ban <- setMinMax(Lan_Ban)
 
-# view raster attributes, copied what appears in the console
+# view raster attributes, this was copied from the console
 Lan_Ban
 # class      : RasterLayer
 # band       : 1  (of  7  bands)
