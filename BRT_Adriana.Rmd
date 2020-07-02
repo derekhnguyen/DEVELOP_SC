@@ -1,0 +1,22 @@
+---
+title: "BRT_Adriana"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Libraries ##
+```{r}
+library(rgdal)
+library(raster)
+library(tidyverse)
+```
+
+```{r}
+allbands <- stack("UVVR_Landsat_Bands.tif")
+bands <- setMinMax(allbands)
+plot(bands)
+```
+
