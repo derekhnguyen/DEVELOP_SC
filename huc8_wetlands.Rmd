@@ -1,0 +1,66 @@
+---
+title: "huc8_wetland"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(sf)
+library(tmap)
+library(tmaptools)
+
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+# Read in shapefiles
+```{r}
+huc8_1 <- read_sf(dsn = here("HU8_03050112_watershed", "HU8_03050112_Watershed"),
+                  layer = "HU8_03050112_Wetlands") %>% 
+  clean_names() %>% 
+  filter(wetland_ty %in% "Estuarine and Marine Wetland")
+
+huc8_2 <- read_sf(dsn = here("HU8_03050201_watershed", "HU8_03050201_Watershed"),
+                  layer = "HU8_03050201_Wetlands") %>% 
+  clean_names() %>% 
+  filter(wetland_ty %in% "Estuarine and Marine Wetland")
+
+huc8_3 <- read_sf(dsn = here("HU8_03050202_watershed", "HU8_03050202_Watershed"),
+                  layer = "HU8_03050202_Wetlands") %>% 
+  clean_names() %>% 
+  filter(wetland_ty %in% "Estuarine and Marine Wetland")
+
+huc8_4 <- read_sf(dsn = here("HU8_03050206_watershed", "HU8_03050206_Watershed"),
+                  layer = "HU8_03050206_Wetlands") %>% 
+  clean_names() %>% 
+  filter(wetland_ty %in% "Estuarine and Marine Wetland")
+
+huc8_5 <- read_sf(dsn = here("HU8_03050209_watershed", "HU8_03050209_Watershed"),
+                  layer = "HU8_03050209_Wetlands") %>% 
+  clean_names() %>% 
+  filter(wetland_ty %in% "Estuarine and Marine Wetland")
+```
+
+```{r}
+huc8_interactive <- 
+  tm_basemap("Esri.WorldImagery") +
+  tm_shape(huc8_1) +
+  tm_fill("wetland_ty", alpha = 0.7, legend.show = FALSE) +
+  tm_shape(huc8_2) +
+  tm_fill("wetland_ty", alpha = 0.7, legend.show = FALSE) +
+  tm_shape(huc8_3) +
+  tm_fill("wetland_ty", alpha = 0.7, legend.show = FALSE) +
+  tm_shape(huc8_5) +
+  tm_fill("wetland_ty", alpha = 0.7, legend.show = FALSE) +
+  tm_shape(huc8_4) +
+  tm_fill("wetland_ty", alpha = 0.7, legend.show = FALSE) +
+  tm_layout(title = "South Carolina Wetland Study Area")
+
+tmap_mode("view")
+huc8_interactive
+```
+
