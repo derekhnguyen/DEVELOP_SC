@@ -21,8 +21,6 @@ Lan_Ban
 #plot raster, add title with main
 plot(Lan_Ban, main= "UVVR Landsat Bands")
 
-?plot
-
 #distribution of values in the raster
 hist(Lan_Ban, main="Distribution of Landsat Bands in UVVR",
      col= "purple",
