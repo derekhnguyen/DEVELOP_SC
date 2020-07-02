@@ -17,6 +17,9 @@ library(tidyverse)
 ```{r}
 allbands <- stack("UVVR_Landsat_Bands.tif")
 bands <- setMinMax(allbands)
-plot(bands)
+plot(bands, main="UVVR Landsat Bands")
+```
+```{r}
+
 ```
 
