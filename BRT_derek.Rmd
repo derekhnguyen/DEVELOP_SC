@@ -18,15 +18,18 @@ library(gstat)
 ```
 
 ```{r}
-bands <- stack("UVVR_Landsat_Bands.tif")
-evi <- stack("UVVR_Landsat_EVI.tif")
-index <- stack("UVVR_Landsat_Index.tif")
-uvvr <- stack("UVVR_Landsat_UVVR.tif")
+bands <- stack(here("UVVR_brt", "UVVR_Landsat_Bands.tif"))
+evi <- raster(here("UVVR_brt", "UVVR_Landsat_EVI.tif"))
+index <- stack(here("UVVR_brt", "UVVR_Landsat_Index.tif"))
+uvvr <- raster(here("UVVR_brt", "UVVR_Landsat_UVVR.tif"))
 ```
 
 # `stack` function once you separate all 7 bands from all 4 rasters. 
 ```{r}
 bands
+evi
+index
+uvvr
 ```
 
 
@@ -50,9 +53,28 @@ wgs84 <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +no_defs"
 ```
 
 
+### UVVR 2017
+```{r}
+summary(uvvr, maxsamp = ncell(uvvr))
+```
+
+```{r}
+uvvr_points <- rasterToPoints(uvvr, spatial = TRUE)
+```
+
+```{r}
+uvvr_df <- data.frame(uvvr_points) %>% 
+  clean_names()
+rm(uvvr_points)
 
 
 
+ggplot()+
+  geom_raster(data = uvvr_df, aes(x = x,
+                                  y = y,
+                                  fill = uvvr_landsat_uvvr)) 
+  coord_equal()
+```
 
 
 
