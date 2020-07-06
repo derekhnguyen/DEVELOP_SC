@@ -18,10 +18,11 @@ library(janitor)
 library(maps)
 library(mapdata)
 library(tmap)
+library(here)
 ```
 
 ```{r}
-uvvr <- stack("UVVR_Landsat_UVVR (2).tif")
+uvvr <- stack(here("UVVR_brt", "UVVR_Landsat_UVVR (2).tif"))
 
 nlayers(uvvr)
 ```
