@@ -1,0 +1,279 @@
+---
+title: "random_forest_final"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+title: "random forest"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+### South Carolina Water Resources Team, LaRC Summer 2020
+
+### Random Forest Attempt 1
+
+ 
+# Load libraries necessary for wrangling and running random forest algorithm....
+library(rgdal)
+library(randomForest)
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(ggplot2)
+library(raster)
+
+
+# Load dataset, might be too big for randForest algorithm. May have to cut down to see if algorithm works with current data. 
+stack_uvvr <- read_csv("stack.csv") %>% 
+  clean_names() %>% 
+  na.omit() %>% 
+  dplyr::select(-x1) %>% 
+  head(100)
+
+##########################################
+```
+
+```{r}
+bands <- stack(here("UVVR_brt", "UVVR_Landsat_Bands.tif"))
+evi <- raster(here("UVVR_brt", "UVVR_Landsat_EVI.tif"))
+index <- stack(here("UVVR_brt", "UVVR_Landsat_Index.tif"))
+uvvr <- raster(here("UVVR_brt", "UVVR_Landsat_UVVR.tif"))
+```
+
+```{r}
+# Reproject UVVR raster
+uvvr1 <- projectRaster(uvvr, bands)
+
+ 
+
+# Mask other rasters by UVVR raster
+uvvr_bands <- mask(bands, uvvr1)
+uvvr_index <- mask(index, uvvr1)
+uvvr_evi <- mask(evi, uvvr1)
+
+ 
+
+# Pull into a single stack
+covs <- addLayer(uvvr_bands, uvvr1, uvvr_index, uvvr_evi)
+
+names(covs) <- c("b1",
+                 "b2",
+                 "b3",
+                 "b4",
+                 "b5",
+                 "b6",
+                 "b7",
+                 "uvvr_landsat_uvvr",
+                 "ndvi",
+                 "ndwi",
+                 "ndbi",
+                 "uvvr_landsat_evi")
+plot(covs)
+
+```
+
+
+
+
+```{r}
+
+# clean up data, also only keep firs 100 rows to see if it even works. 
+
+cal_data <- read.csv("stack.csv",header=T) %>% 
+  clean_names() %>% 
+  na.omit() %>% 
+  dplyr::select(-x) %>% 
+  head(100)
+val_data <- read.csv("stack.csv",header=T) %>% 
+  clean_names() %>% 
+  na.omit() %>% 
+  dplyr::select(-x) %>% 
+  head(100)
+```
+
+
+
+```{r}
+names(cal_data)
+head(cal_data)
+head(val_data)
+```
+
+
+```{r}
+# It's Random Forest Time babyyyyyyyy.....
+
+# First set a RNG seed for reproducibility....
+set.seed(1002)
+
+# set `y` and `x` parameters
+
+y_data <- cal_data[["uvvr_landsat_uvvr"]]
+
+x_data <- cal_data[c("b1",
+                     "b2",
+                     "b3",
+                     "b4",
+                     "b5",
+                     "b6",
+                     "b7",
+                     "ndvi",
+                     "ndwi",
+                     "ndbi",
+                     "uvvr_landsat_evi")]
+```
+
+
+```{r}
+# Random forest tuning
+
+tuneRF(x = x_data,
+       y = y_data,
+       plot = TRUE,
+       mtryStart = 8, 
+       ntreeTry = 150, 
+       improve = 0.000001, 
+       stepFactor = 2, 
+       trace = TRUE, 
+       sampsize = 100, 
+       nodesize = 5, 
+       doBest = T)
+```
+
+```{r}
+# UVVR output
+uvvr_out <- randomForest(x = x_data, y = y_data, mtry = 6, ntree = 5000, importance = TRUE, keep.forest = TRUE)
+
+which.min(uvvr_out$mse)
+
+```
+
+```{r}
+print(uvvr_out)
+plot(uvvr_out)
+class(uvvr_out)
+str(uvvr_out)
+names(uvvr_out)
+
+varImpPlot(uvvr_out)
+```
+
+
+```{r}
+importance(uvvr_out, newdata=val_data)
+```
+
+```{r}
+##	Get the variable names of the top 20 predictors:
+names(importance(uvvr_out, newdata=val_data)[,"%IncMSE"][order(importance(uvvr_out, newdata=val_data)[,"%IncMSE"], decreasing=TRUE)])[1:11]
+varImpPlot(uvvr_out)        
+varUsed(uvvr_out)
+```
+
+```{r}
+##  Interrogate the structure of a randomForest() model output:
+summary(uvvr_out)
+names(uvvr_out)
+varImpPlot(uvvr_out)
+```
+
+```{r}
+##  Basic diagnostics of predictions from training data:
+
+##	For continuous regression, plot observed vs. predicted:
+plot(x=predict(uvvr_out), y=y_data)
+abline(a=0, b=1, lty=2)
+
+```
+
+```{r}
+##	For continuous regression, plot residuals vs. observed:
+plot(x=y_data, y=(y_data - predict(uvvr_out)))
+abline(a=0, b=0, lty=2)
+```
+```{r}
+##	For continuous regression, plot residuals vs. fitted:
+plot(x=predict(uvvr_out), y=(y_data - predict(uvvr_out)))
+abline(a=0, b=0, lty=2)
+```
+
+```{r}
+##	At this point you can save off our regression as an R object for future use:
+#load(file="uvvr_out1.RData")
+#uvvr_out1 = uvvr_out
+#save(uvvr_out1, file="uvvr_out1.RData")  
+
+
+```
+
+```{r}
+names(val_data)
+```
+
+
+```{r}
+##  Generate predictions from our fitted model but for our validation points:
+predictions <- 1- predict(covs, model = uvvr_out, na.rm = TRUE)
+
+plot(predictions)
+```
+
+
+
+
+
+
+
+```{r}
+#rf_prob <- 1 - raster::predict(model=rf1, object = uvvr_out1)
+#plot(rf_prob)
+```
+
+```{r}
+## Generate % variance explained for validation data:
+# SSE <- sum((predictions - val_data$Tcan)^2)
+# TSS <- sum((val_data$Tcan - mean(val_data$Tcan))^2)
+# pct_var <- 1 - SSE/TSS
+# print(pct_var)
+
+```
+
+
+```{r}
+# ##	Rasterize our validation predictions and errors:
+# coords <- cbind(val_data$x_2, val_data$y) ###still need to set the coordinates of the SA
+# spdata <- SpatialPointsDataFrame(data.frame("predictions"=predictions, "error"=(predictions-val_data$Tcan)), coords=coords)
+# ```
+# ```{r}
+# ##  Create an empty raster object to the extent of the points:
+# rast <- raster(ext=extent(spdata), resolution=10)
+# 
+# rast_out <- rasterize(spdata, rast)
+# 
+# 
+# plot(rast_out$predictions)
+# plot(rast_out$error)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
